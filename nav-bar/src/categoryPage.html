@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+ <head>
+   <script src="vendor/jquery-1.12.2.js" type="text/javascript"></script>
+   <script src="vendor/react.js" type="text/javascript"></script>
+   <script src="vendor/react-dom.js" type="text/javascript"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.min.js" type="text/javascript"></script>
+   <link rel="stylesheet" href="navbar.css">
+</head>
+ <body>
+
+   <section id="app"></section>
+
+   <script type="text/babel">
+     var CategoryList = React.createClass({
+      getInitialState: function() {
+         return {
+           categoryArray: new Array()
+         };
+      },
+      componentDidMount: function() {
+         this.fetchData();
+      },
+      render: function() {
+         var lines = this.state.categoryArray.map(function(category) {
+           return (
+             <li key={category.id}>
+             <input type="text" id={category.id} value={category.name} onChange={this.reflectChangedData.bind(this,category.id)} />&nbsp;
+             <button onClick={this.removeCategory.bind(this,category.id)}>Remove</button>
+             </li>
+           )
+         }.bind(this));
+         return (
+           <div style={{"border": "1px solid black", "width": "400px"}}>
+           <button onClick={this.addCategory}>Add</button>
+           <ul> {lines} </ul>
+           <button onClick={this.pushData}>Save</button>
+           </div>
+         )
+      },
+      fetchData: function() {
+         $.ajax({
+           url: this.props.rootUrl + "advancedSetting/category/",
+           type: "GET",
+           contentType: "application/json",
+           success: function(response) {
+             this.setState({
+               categoryArray: response
+             });
+           }.bind(this),
+           error: function(response) {
+             console.log(JSON.stringify(response));
+           }
+         })
+      },
+      reflectChangedData: function(id, event) {
+         var categories = this.state.categoryArray;
+         var pos = categories.map(function(x) {return x.id; }).indexOf(id);
+         categories[pos].name = event.target.value;
+         this.setState({categoryArray : categories});
+      },
+      pushData: function() {
+         $.ajax({
+           url: this.props.rootUrl + "advancedSetting/category/",
+           type: "POST",
+           contentType: "application/json",
+           data: JSON.stringify(this.state.categoryArray),
+           success: function(response) {
+             if (!response.success) {
+               console.log(JSON.stringify(response))
+             }
+             this.fetchData();
+           }.bind(this),
+           error: function(response) {
+             console.log(JSON.stringify(response));
+             this.fetchData();
+           }
+         })
+      },
+      addCategory: function(e) {
+         e.preventDefault();
+         var categories = this.state.categoryArray;
+         var newId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+           var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+           return v.toString(16);
+         });
+         categories.push({id: newId, name: null});
+         this.setState({categoryArray : categories});
+      },
+      removeCategory: function(id, event) {
+         $.ajax({
+           url: this.props.rootUrl + "advancedSetting/category/" + id,
+           type: "DELETE",
+           contentType: "application/json",
+           success: function(response) {
+             if (!response.success) {
+               console.log(JSON.stringify(response))
+             }
+             this.fetchData();
+           }.bind(this),
+           error: function(response) {
+             console.log(JSON.stringify(response));
+             this.fetchData();
+           }.bind(this)
+         });
+      }
+     });
+
+     ReactDOM.render(<CategoryList rootUrl={"http://127.0.0.1:8888/api/"} />, document.getElementById('app'));
+   </script>
+ </body>
+</html>

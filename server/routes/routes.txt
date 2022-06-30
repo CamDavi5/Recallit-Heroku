@@ -1,0 +1,38 @@
+                                   Routes
+            
+             **Saved Items Table**
+*Presents all items from the saveditems table(id,userid,CPSCid,NHTSAid)
+localhost:3000/api/saveditems  (saveditems)
+
+*Presents the item with a specific id from the saveditems table
+localhost:3000/api/saveditems/id     (saveditems w/ id)
+
+
+
+
+
+
+
+
+
+                  **Suggestions Table**
+*Presents all items from suggestions table (id,userid,CPSCid,NHTSAid,usercomment,_created)                 
+localhost:3000/api/suggestions        (suggestions)
+
+*Presents the item with a specific id from the suggestions table
+localhost:3000/api/suggestions/id      (suggestions w/ id)
+
+*Presents specific user data from joining the users and suggestions table
+localhost:3000/api/suggestions/userdetail/id       (responds with username, product code, and usercomment)
+
+
+
+                 **Users Table**
+*Presents all items from the Users table(id,username,password,birthdate,email)     
+localhost:3000/api/user  
+
+*Presents specific user information using the id    
+localhost:3000/api/user/id
+
+
+
